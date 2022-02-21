@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="528fc4d2-937b-4491-81a0-0c6b30c541ca" file="${env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="a3dc0aff-4d0e-43e6-bf33-080eeef73ace" name="env" value="qa" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="359cb22a-4545-404f-9034-80a2203581ff" >
+		<http:listener-connection host="0.0.0.0" port="${port}" readTimeout="${timeout}"/>
+	</http:listener-config>
+	<flow name="test-mulesoft-functionsFlow" doc:id="28972ee0-a788-4640-a5d2-19c21a7646ec" >
+		<http:listener doc:name="Listener" doc:id="f37c4b43-7248-45a2-a7e9-ef483dbfa7d4" config-ref="HTTP_Listener_config" path="/request"/>
+		<set-variable value='${env}", "${app.home}", "${app.name}' doc:name="Set Variable" doc:id="c21b1a35-f427-480e-85cb-23f7b4611404" variableName="vEnv"/>
+		<ee:transform doc:name="Transform Message" doc:id="274ab226-612f-4b38-9539-7cce28cce63b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "env" : vars.vEnv
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1ea48fda-7bcd-4cf9-a3d3-3a57b8fb1cb0" message="${host}:${port} + ${app.name} + #[vars.vEnv]"/>
+	</flow>
+</mule>

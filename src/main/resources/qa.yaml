@@ -1,0 +1,4 @@
+path: "qa"
+host: "localhost"
+port: "8082"
+timeout: "30000"
